@@ -5,21 +5,30 @@ import React from 'react'
 import { PortableText } from "@portabletext/react"
 
 async function getData(slug: string) {
-  const query = `
-  *[_type == "blog" && slug.current == "${slug}"]{
-    "currentSlug": slug.current,
-    title,
-    content,
-    titleImage
-  }[0]
-  `;
-  const data = await client.fetch(query);
-  return data;
+  try {
+    const query = `
+    *[_type == "blog" && slug.current == "${slug}"]{
+      "currentSlug": slug.current,
+      title,
+      content,
+      titleImage
+    }[0]
+    `;
+    const data: fullBlog = await client.fetch(query);
+    return data;
+  } catch (error) {
+    console.error("Error fetching blog data:", error);
+    return null;
+  }
 }
 
 export default async function Blog({ params }: { params: { slug: string } }) {
-  const slug = params.slug;  // Extract slug from params
-  const data: fullBlog = await getData(slug);  // Fetch data based on slug
+  const slug = params.slug;  // Await and extract slug
+  const data = await getData(slug);  // Fetch data based on slug
+
+  if (!data) {
+    return <div>Error fetching blog data.</div>;  // Return error message if data is null
+  }
 
   console.log(data);
 
