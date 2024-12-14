@@ -1,7 +1,6 @@
 import { fullBlog } from '@/lib/interface'
 import { client, urlFor } from '@/lib/sanity'
 import Image from 'next/image'
-import React from 'react'
 import { PortableText } from "@portabletext/react"
 
 async function getData(slug: string) {
@@ -22,15 +21,13 @@ async function getData(slug: string) {
   }
 }
 
-export default async function Blog({ params }: { params: { slug: string } }) {
-  const slug = params.slug;  // Await and extract slug
+export default async function Blog({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;  // Await and extract slug
   const data = await getData(slug);  // Fetch data based on slug
 
   if (!data) {
     return <div>Error fetching blog data.</div>;  // Return error message if data is null
   }
-
-  console.log(data);
 
   return (
     <div className="mt-8">
